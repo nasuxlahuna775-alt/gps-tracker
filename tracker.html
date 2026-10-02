@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>แชร์พิกัด | Live GPS Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>" />
+</head>
+<body data-page="tracker" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 px-5 py-4">
+    <h1 class="text-xl font-bold flex items-center gap-2">
+      <span>📍</span> แชร์พิกัด (Tracker)
+    </h1>
+    <p class="text-slate-400 text-sm mt-1">เปิดหน้านี้บนมือถือเพื่อส่งพิกัดแบบเรียลไทม์</p>
+  </header>
+
+  <main class="flex-1 px-5 py-6 max-w-md mx-auto w-full space-y-5">
+
+    <!-- Device ID -->
+    <div class="bg-slate-800 rounded-2xl p-5 shadow-lg">
+      <label class="block text-sm font-medium text-slate-300 mb-2">รหัส/ชื่ออุปกรณ์ (Track Code)</label>
+      <input id="deviceId" type="text" placeholder="เช่น car-01, phone-dad"
+        class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+      <p class="text-xs text-slate-500 mt-2">ใช้รหัสเดียวกันนี้กรอกในหน้าแดชบอร์ดเพื่อติดตาม</p>
+    </div>
+
+    <!-- Status -->
+    <div class="bg-slate-800 rounded-2xl p-5 shadow-lg space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400 text-sm">สถานะ</span>
+        <span id="status" class="px-3 py-1 rounded-full text-sm font-semibold bg-slate-700 text-slate-300">หยุด</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div class="bg-slate-900 rounded-xl p-3">
+          <div class="text-slate-500">ละติจูด (Lat)</div>
+          <div id="lat" class="font-mono text-indigo-300">-</div>
+        </div>
+        <div class="bg-slate-900 rounded-xl p-3">
+          <div class="text-slate-500">ลองจิจูด (Lng)</div>
+          <div id="lng" class="font-mono text-indigo-300">-</div>
+        </div>
+        <div class="bg-slate-900 rounded-xl p-3">
+          <div class="text-slate-500">ความแม่นยำ (Accuracy)</div>
+          <div id="accuracy" class="font-mono text-emerald-300">-</div>
+        </div>
+        <div class="bg-slate-900 rounded-xl p-3">
+          <div class="text-slate-500">ความเร็ว (Speed)</div>
+          <div id="speed" class="font-mono text-amber-300">-</div>
+        </div>
+      </div>
+      <div class="flex items-center justify-between text-sm pt-1">
+        <span class="text-slate-400">🔋 แบตเตอรี่</span>
+        <span id="battery" class="font-mono text-slate-300">-</span>
+      </div>
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-slate-400">↑ อัปเดตล่าสุด</span>
+        <span id="lastUpdate" class="font-mono text-slate-300">-</span>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="grid grid-cols-2 gap-3">
+      <button id="startBtn"
+        class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 transition rounded-2xl py-4 font-bold text-lg shadow-lg">
+        ▶️ เริ่มแชร์
+      </button>
+      <button id="stopBtn" disabled
+        class="bg-rose-600 hover:bg-rose-500 active:scale-95 transition rounded-2xl py-4 font-bold text-lg shadow-lg disabled:opacity-40 disabled:cursor-not-allowed">
+        ⏹️ หยุด
+      </button>
+    </div>
+
+    <!-- Log -->
+    <div class="bg-slate-800 rounded-2xl p-4 shadow-lg">
+      <div class="text-slate-400 text-xs mb-2">บันทึกการทำงาน (Log)</div>
+      <div id="log" class="text-xs font-mono text-slate-400 space-y-1 max-h-40 overflow-y-auto"></div>
+    </div>
+
+    <p class="text-center text-xs text-slate-600">
+      เปิดหน้าแดชบอร์ด (index.html) บนคอมพิวเตอร์เพื่อดูตำแหน่งแบบสดๆ
+    </p>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

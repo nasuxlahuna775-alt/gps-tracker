@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แดชบอร์ดติดตามพิกัด | Live GPS Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>" />
+  <style>
+    #map { height: 100%; width: 100%; z-index: 0; }
+    .pulse-dot { animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)} 70%{box-shadow:0 0 0 12px rgba(16,185,129,0)} 100%{box-shadow:0 0 0 0 rgba(16,185,129,0)} }
+    .leaflet-popup-content { margin: 10px 14px; font-family: ui-sans-serif, system-ui; }
+  </style>
+</head>
+<body data-page="viewer" class="bg-slate-900 text-slate-100 h-screen overflow-hidden">
+
+  <div class="flex h-full">
+
+    <!-- Sidebar -->
+    <aside class="w-80 shrink-0 bg-slate-800 border-r border-slate-700 flex flex-col">
+      <div class="px-5 py-4 border-b border-slate-700">
+        <h1 class="text-lg font-bold flex items-center gap-2"><span>🗺️</span> Live GPS Dashboard</h1>
+        <p class="text-slate-400 text-xs mt-1">ติดตามตำแหน่งแบบเรียลไทม์</p>
+      </div>
+
+      <div class="px-5 py-3 border-b border-slate-700">
+        <label class="text-xs text-slate-400">กรองรหัสเฉพาะ (เว้นว่าง = แสดงทุกเครื่อง)</label>
+        <div class="flex gap-2 mt-2">
+          <input id="filterId" type="text" placeholder="Track Code"
+            class="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          <button id="clearFilter" class="bg-slate-700 hover:bg-slate-600 rounded-lg px-3 text-sm">✕</button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto">
+        <div id="deviceList" class="divide-y divide-slate-700/60"></div>
+        <div id="emptyState" class="p-6 text-center text-slate-500 text-sm">
+          ยังไม่มีอุปกรณ์ออนไลน์<br/>เปิด tracker.html บนมือถือแล้วกดเริ่มแชร์
+        </div>
+      </div>
+
+      <div class="px-5 py-3 border-t border-slate-700 text-xs text-slate-500">
+        <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot inline-block"></span> เชื่อมต่อฐานข้อมูลอยู่</div>
+      </div>
+    </aside>
+
+    <!-- Map -->
+    <div class="flex-1 relative">
+      <div id="map"></div>
+      <div class="absolute top-4 right-4 z-[400] bg-slate-800/90 backdrop-blur rounded-xl px-4 py-2 text-sm shadow-lg">
+        อุปกรณ์ออนไลน์: <span id="onlineCount" class="font-bold text-emerald-400">0</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
