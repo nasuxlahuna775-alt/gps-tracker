@@ -141,6 +141,21 @@ function initTracker() {
     return base + "index.html?track=" + encodeURIComponent(deviceId);
   }
 
+  function showShareLinkBox(url) {
+    // แสดงลิงก์บนหน้าเพจให้เห็นชัดๆ (กดค้างไว้เพื่อคัดลอกเองได้)
+    let box = $("shareLinkBox");
+    if (!box) {
+      box = document.createElement("input");
+      box.id = "shareLinkBox";
+      box.readOnly = true;
+      box.className = "w-full mt-2 bg-slate-900 border border-indigo-500 rounded-xl px-3 py-2 text-xs font-mono text-indigo-200";
+      box.addEventListener("click", () => box.select());
+      $("shareHint").insertAdjacentElement("afterend", box);
+    }
+    box.value = url;
+    box.select();
+  }
+
   async function doShare() {
     const deviceId = $("deviceId").value.trim();
     if (!deviceId) { alert("\u0e01\u0e23\u0e38\u0e13\u0e32\u0e43\u0e2a\u0e48\u0e23\u0e2b\u0e31\u0e2a/\u0e0a\u0e37\u0e48\u0e2d\u0e2d\u0e38\u0e1b\u0e01\u0e23\u0e13\u0e4c\u0e01\u0e48\u0e2d\u0e19\u0e41\u0e0a\u0e23\u0e4c"); return; }
@@ -150,26 +165,40 @@ function initTracker() {
       text: `\u0e15\u0e34\u0e14\u0e15\u0e32\u0e21\u0e15\u0e33\u0e41\u0e2b\u0e19\u0e48\u0e07\u0e02\u0e2d\u0e07 "${deviceId}" \u0e41\u0e1a\u0e1a\u0e40\u0e23\u0e35\u0e22\u0e25\u0e44\u0e17\u0e21\u0e4c`,
       url
     };
-    // 1) Web Share API (มือถือ)
+    log("\ud83d\udd17 \u0e01\u0e14\u0e41\u0e0a\u0e23\u0e4c\u0e25\u0e34\u0e07\u0e01\u0e4c: " + url);
+
+    // 1) Web Share API (ใช้ได้เฉพาะ https/localhost บนมือถือ)
     if (navigator.share) {
       try {
         await navigator.share(shareData);
-        log("\ud83d\udd17 \u0e41\u0e0a\u0e23\u0e4c\u0e25\u0e34\u0e07\u0e01\u0e4c\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08");
+        $("shareHint").textContent = "\u2705 \u0e41\u0e0a\u0e23\u0e4c\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08\u0e41\u0e25\u0e49\u0e27";
+        $("shareHint").className = "text-center text-xs text-emerald-400";
         return;
       } catch (e) {
         if (e && e.name === "AbortError") return; // ผู้ใช้กดยกเลิก
+        log("\u26a0\ufe0f \u0e40\u0e21\u0e19\u0e39\u0e41\u0e0a\u0e23\u0e4c\u0e44\u0e21\u0e48\u0e02\u0e36\u0e49\u0e19: " + (e && e.message ? e.message : e));
       }
     }
-    // 2) คัดลอกลิงก์ไปยัง Clipboard
+
+    // 2) คัดลอกลิงก์ไปยัง Clipboard (ต้องเป็น https/localhost)
     try {
-      await navigator.clipboard.writeText(url);
-      $("shareHint").textContent = "\u2705 \u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e25\u0e34\u0e07\u0e01\u0e4c\u0e41\u0e25\u0e49\u0e27 \u2014 \u0e19\u0e33\u0e44\u0e1b\u0e27\u0e32\u0e07\u0e43\u0e2b\u0e49\u0e04\u0e19\u0e2d\u0e37\u0e48\u0e19\u0e44\u0e14\u0e49\u0e40\u0e25\u0e22";
-      $("shareHint").className = "text-center text-xs text-emerald-400";
-      log("\ud83d\udccb \u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e25\u0e34\u0e07\u0e01\u0e4c: " + url);
-    } catch (e) {
-      // 3) สุดท้าย — prompt ให้คัดลอกเอง
-      window.prompt("\u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e25\u0e34\u0e07\u0e01\u0e4c\u0e19\u0e35\u0e49\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e41\u0e0a\u0e23\u0e4c:", url);
-    }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+        $("shareHint").textContent = "\u2705 \u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e25\u0e34\u0e07\u0e01\u0e4c\u0e41\u0e25\u0e49\u0e27 \u2014 \u0e27\u0e32\u0e07\u0e2a\u0e48\u0e07\u0e43\u0e2b\u0e49\u0e40\u0e1e\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e14\u0e49\u0e40\u0e25\u0e22";
+        $("shareHint").className = "text-center text-xs text-emerald-400";
+        showShareLinkBox(url);
+        return;
+      }
+    } catch (e) { /* ไปต่อ fallback */ }
+
+    // 3) Fallback สุดท้าย — แสดงลิงก์ในกล่องให้คัดลอกเอง (ใช้ได้แม้บน file://)
+    $("shareHint").textContent = "\u2139\ufe0f \u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e25\u0e34\u0e07\u0e01\u0e4c\u0e14\u0e49\u0e32\u0e19\u0e25\u0e48\u0e32\u0e07\u0e44\u0e1b\u0e2a\u0e48\u0e07\u0e43\u0e2b\u0e49\u0e04\u0e19\u0e2d\u0e37\u0e48\u0e19";
+    $("shareHint").className = "text-center text-xs text-amber-400";
+    showShareLinkBox(url);
+    try {
+      const ok = document.execCommand && (($("shareLinkBox").select()), document.execCommand("copy"));
+      if (ok) { $("shareHint").textContent = "\u2705 \u0e04\u0e31\u0e14\u0e25\u0e2d\u0e01\u0e25\u0e34\u0e07\u0e01\u0e4c\u0e41\u0e25\u0e49\u0e27"; $("shareHint").className = "text-center text-xs text-emerald-400"; }
+    } catch (e) { /* ไม่เป็นไร — ลิงก์แสดงในกล่องให้แล้ว */ }
   }
 
   $("shareBtn").addEventListener("click", doShare);
